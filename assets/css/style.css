@@ -5,3 +5,7 @@ body {
   margin-bottom: 50px; /* A enlever quand il y aura un footer */
   font-family: "Open Sans", sans-serif;
 }
+
+h1 {
+  color: rgb(50, 50, 50);
+}

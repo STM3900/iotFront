@@ -135,10 +135,6 @@ export default {
 </script>
 
 <style scoped>
-body {
-  color: #35bfe9;
-}
-
 .graphs {
   display: flex;
   flex-direction: row;
@@ -157,6 +153,7 @@ body {
 
 .graphs h2 {
   font-size: 22px;
+  color: rgb(50, 50, 50);
 }
 
 .graph-icon {

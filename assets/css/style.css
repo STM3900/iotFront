@@ -1,6 +1,7 @@
 body {
-  margin-right: 20%;
-  margin-left: 20%;
+  margin-right: 10%;
+  margin-left: 10%;
   margin-top: 25px;
+  margin-bottom: 50px; /* A enlever quand il y aura un footer */
   font-family: "Open Sans", sans-serif;
 }

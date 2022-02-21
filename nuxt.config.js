@@ -46,7 +46,13 @@ export default {
         imports: [
           {
             set: "@fortawesome/free-solid-svg-icons",
-            icons: ["faCode"],
+            icons: [
+              "faCode",
+              "faTemperatureHalf",
+              "faDroplet",
+              "faWind",
+              "faSun",
+            ],
           },
           {
             set: "@fortawesome/free-brands-svg-icons",

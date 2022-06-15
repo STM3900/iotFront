@@ -66,7 +66,7 @@ export default {
           yAxes: [
             {
               display: true,
-              stacked: true,
+              stacked: false,
               ticks: {
                 suggestedMin: 0,
                 min: 0,
@@ -82,29 +82,6 @@ export default {
     this.createDataListTab();
   },
   methods: {
-    generateGraphObj(jsonData, label, color) {
-      const chartData = {};
-      const datasets = [];
-
-      const dataLabels = [];
-      const dataValues = [];
-
-      for (let i = 0; i < jsonData.length; i++) {
-        dataLabels.push(jsonData[i].date);
-        dataValues.push(jsonData[i].value);
-      }
-
-      datasets.push({
-        label: label,
-        backgroundColor: color,
-        data: dataValues,
-      });
-
-      chartData.labels = dataLabels;
-      chartData.datasets = datasets;
-
-      return chartData;
-    },
     createDataListTab() {
       const dataLabels = [
         "Température",
@@ -124,16 +101,61 @@ export default {
         "hsl(10, 70%, 75%)",
       ];
 
-      const data = Object.entries(this.dataJson.allData[0].deviceData);
-      const dataLength = data.length;
+      const dataItemFinal = [];
+      const dataItemLength = Object.entries(
+        this.dataJson.allData[0].deviceData
+      ).length;
 
-      for (let i = 0; i < dataLength; i++) {
-        this.allDataTab.push(
-          this.generateGraphObj(data[i][1], dataLabels[i], dataColors[i])
-        );
+      for (let i = 0; i < dataItemLength; i++) {
+        dataItemFinal.push([]);
       }
 
-      //console.log(this.allDataTab);
+      for (let i = 0; i < this.dataJson.allData.length; i++) {
+        const dataItem = Object.entries(this.dataJson.allData[i].deviceData);
+
+        for (let j = 0; j < dataItem.length; j++) {
+          dataItemFinal[j].push(
+            this.generateGraphObj(dataItem[j][1], dataLabels[j], dataColors[j])
+          );
+        }
+      }
+
+      for (let i = 0; i < dataItemFinal.length; i++) {
+        let datasetTab = dataItemFinal[i][0];
+
+        for (let j = 1; j < dataItemFinal[i].length; j++) {
+          datasetTab.datasets.push(dataItemFinal[i][j].datasets[0]);
+        }
+
+        dataItemFinal[i] = datasetTab;
+      }
+
+      console.log(dataItemFinal);
+      this.allDataTab = dataItemFinal;
+    },
+    generateGraphObj(jsonData, label, color) {
+      const chartData = {};
+      const datasets = [];
+
+      const dataLabels = [];
+      const dataValues = [];
+
+      for (let i = 0; i < jsonData.length; i++) {
+        dataLabels.push(jsonData[i].date);
+        dataValues.push(jsonData[i].value);
+      }
+
+      datasets.push({
+        label: label,
+        backgroundColor: color,
+        data: dataValues,
+        fill: false,
+      });
+
+      chartData.labels = dataLabels;
+      chartData.datasets = datasets;
+
+      return chartData;
     },
     insertMinMaxY(index) {
       let finalTab = JSON.parse(JSON.stringify(this.chartOptions));

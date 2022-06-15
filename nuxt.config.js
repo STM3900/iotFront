@@ -52,6 +52,8 @@ export default {
               "faDroplet",
               "faWind",
               "faSun",
+              "faBatteryThreeQuarters",
+              "faTriangleExclamation",
             ],
           },
           {

@@ -12,7 +12,14 @@
           {{ graph.datasets[0].label }}
         </h2>
         <client-only>
+          <BarChart
+            v-if="graph.datasets[0].label == 'Historique alerte surchauffe'"
+            class="graph-chart"
+            :chartData="graph"
+            :options="insertMinMaxY(index)"
+          />
           <LineChart
+            v-else
             class="graph-chart"
             :chartData="graph"
             :options="insertMinMaxY(index)"
@@ -24,19 +31,29 @@
 </template>
 
 <script>
-import MASTER_JSON from "~/assets/json/dataTest";
+import MASTER_JSON from "~/assets/json/dataTestIot";
 
 export default {
   data() {
     return {
       dataJson: MASTER_JSON,
       allDataTab: [],
-      dataIcons: ["temperature-half", "droplet", "wind", "sun"],
+
+      dataIcons: [
+        "temperature-half",
+        "droplet",
+        "wind",
+        "sun",
+        "battery-three-quarters",
+        "triangle-exclamation",
+      ],
       dataMinMax: [
         { min: undefined, max: 30 },
         { min: 0, max: 100 },
         { min: 1020, max: 1028 },
         { min: 200, max: 280 },
+        { min: 0, max: 100 },
+        { min: 0, max: 1 },
       ],
 
       chartOptions: {
@@ -63,7 +80,6 @@ export default {
   },
   mounted() {
     this.createDataListTab();
-    // this.setMaxGraphValues();
   },
   methods: {
     generateGraphObj(jsonData, label, color) {
@@ -95,6 +111,8 @@ export default {
         "Humidité",
         "Pression de l'air",
         "Niveau de lumière",
+        "Niveau de batterie",
+        "Historique alerte surchauffe",
       ];
 
       const dataColors = [
@@ -102,17 +120,20 @@ export default {
         "hsl(200, 70%, 75%)",
         "hsl(100, 70%, 75%)",
         "hsl(60, 70%, 75%)",
+        "hsl(40, 70%, 75%)",
+        "hsl(10, 70%, 75%)",
       ];
 
-      for (let i = 0; i < Object.entries(this.dataJson).length; i++) {
+      const data = Object.entries(this.dataJson.allData[0].deviceData);
+      const dataLength = data.length;
+
+      for (let i = 0; i < dataLength; i++) {
         this.allDataTab.push(
-          this.generateGraphObj(
-            Object.entries(this.dataJson)[i][1],
-            dataLabels[i],
-            dataColors[i]
-          )
+          this.generateGraphObj(data[i][1], dataLabels[i], dataColors[i])
         );
       }
+
+      //console.log(this.allDataTab);
     },
     insertMinMaxY(index) {
       let finalTab = JSON.parse(JSON.stringify(this.chartOptions));
@@ -122,14 +143,6 @@ export default {
 
       return finalTab;
     },
-    /*
-    setMaxGraphValues() {
-      for (let i = 0; i < this.dataMinMax.length; i++) {
-        const maxValue = Math.max(...this.allDataTab[i].datasets[0].data);
-        this.dataMinMax[i].max = maxValue + 10;
-      }
-    },
-    */
   },
 };
 </script>

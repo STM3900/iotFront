@@ -126,31 +126,31 @@
         "batteryLevel": [
           {
             "date": "21/02/2022",
-            "value": 3.2
+            "value": 75
           },
           {
             "date": "22/02/2022",
-            "value": 3.1
+            "value": 65
           },
           {
             "date": "23/02/2022",
-            "value": 3
+            "value": 50
           },
           {
             "date": "24/02/2022",
-            "value": 3
+            "value": 36
           },
           {
             "date": "25/02/2022",
-            "value": 2.9
+            "value": 23
           },
           {
             "date": "26/02/2022",
-            "value": 2.9
+            "value": 12
           },
           {
             "date": "27/02/2022",
-            "value": 2.7
+            "value": 5
           }
         ],
         "fireWarning": [

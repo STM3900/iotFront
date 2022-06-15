@@ -1,19 +1,19 @@
 <template>
   <div class="container">
-    <h1>Iot Temp Graph</h1>
+    <h1 class="disable-select">Iot Temp Graph</h1>
     <article class="graphs">
       <section v-for="(graph, index) in allDataTab" :key="index">
-        <h2>
+        <h2 class="disable-select">
           <fa
             class="graph-icon"
             :icon="dataIcons[index]"
             :style="{ color: graph.datasets[0].backgroundColor }"
           />
-          {{ graph.datasets[0].label }}
+          {{ dataTitles[index] }}
         </h2>
         <client-only>
           <BarChart
-            v-if="graph.datasets[0].label == 'Historique alerte surchauffe'"
+            v-if="dataTitles[index] == 'Alerte Surchauffe'"
             class="graph-chart"
             :chartData="graph"
             :options="insertMinMaxY(index)"
@@ -47,6 +47,14 @@ export default {
         "battery-three-quarters",
         "triangle-exclamation",
       ],
+      dataTitles: [
+        "Température",
+        "Humidité",
+        "Pression de l'air",
+        "Niveau de lumière",
+        "Niveau de batterie",
+        "Alerte Surchauffe",
+      ],
       dataMinMax: [
         { min: undefined, max: 30 },
         { min: 0, max: 100 },
@@ -60,7 +68,10 @@ export default {
         maintainAspectRatio: false,
         responsive: true,
         legend: {
-          display: false,
+          align: "start",
+          labels: {
+            usePointStyle: true,
+          },
         },
         scales: {
           yAxes: [
@@ -79,26 +90,21 @@ export default {
     };
   },
   mounted() {
+    Chart.Legend.prototype.afterFit = function () {
+      this.height = this.height + 10;
+    };
+
     this.createDataListTab();
   },
   methods: {
     createDataListTab() {
-      const dataLabels = [
-        "Température",
-        "Humidité",
-        "Pression de l'air",
-        "Niveau de lumière",
-        "Niveau de batterie",
-        "Historique alerte surchauffe",
-      ];
-
       const dataColors = [
-        "hsl(0, 70%, 75%)",
-        "hsl(200, 70%, 75%)",
-        "hsl(100, 70%, 75%)",
-        "hsl(60, 70%, 75%)",
-        "hsl(40, 70%, 75%)",
-        "hsl(10, 70%, 75%)",
+        ["hsl(0, 70%, 75%)", "hsl(10, 70%, 75%)", "hsl(20, 70%, 75%)"],
+        ["hsl(200, 70%, 75%)", "hsl(210, 70%, 75%)", "hsl(220, 70%, 75%)"],
+        ["hsl(100, 70%, 75%)", "hsl(110, 70%, 75%)", "hsl(120, 70%, 75%)"],
+        ["hsl(60, 70%, 75%)", "hsl(70, 70%, 75%)", "hsl(80, 70%, 75%)"],
+        ["hsl(40, 70%, 75%)", "hsl(50, 70%, 75%)", "hsl(60, 70%, 75%)"],
+        ["hsl(10, 70%, 75%)", "hsl(20, 70%, 75%)", "hsl(30, 70%, 75%)"],
       ];
 
       const dataItemFinal = [];
@@ -111,11 +117,16 @@ export default {
       }
 
       for (let i = 0; i < this.dataJson.allData.length; i++) {
-        const dataItem = Object.entries(this.dataJson.allData[i].deviceData);
+        const item = this.dataJson.allData[i];
+        const dataItem = Object.entries(item.deviceData);
 
         for (let j = 0; j < dataItem.length; j++) {
           dataItemFinal[j].push(
-            this.generateGraphObj(dataItem[j][1], dataLabels[j], dataColors[j])
+            this.generateGraphObj(
+              dataItem[j][1],
+              item.deviceName,
+              dataColors[j][i]
+            )
           );
         }
       }
@@ -130,7 +141,6 @@ export default {
         dataItemFinal[i] = datasetTab;
       }
 
-      console.log(dataItemFinal);
       this.allDataTab = dataItemFinal;
     },
     generateGraphObj(jsonData, label, color) {
@@ -149,7 +159,7 @@ export default {
         label: label,
         backgroundColor: color,
         data: dataValues,
-        fill: false,
+        // fill: false,
       });
 
       chartData.labels = dataLabels;
@@ -196,6 +206,6 @@ export default {
 }
 
 .graph-chart {
-  height: 250px;
+  height: 275px;
 }
 </style>

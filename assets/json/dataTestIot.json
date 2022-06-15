@@ -1,7 +1,7 @@
 {
   "allData": [
     {
-      "deviceName": "Card1",
+      "deviceName": "CardGarden",
       "deviceData": {
         "temp": [
           {
@@ -186,7 +186,7 @@
       }
     },
     {
-      "deviceName": "Card2",
+      "deviceName": "CardForest",
       "deviceData": {
         "temp": [
           {
@@ -371,7 +371,7 @@
       }
     },
     {
-      "deviceName": "Card3",
+      "deviceName": "CardField",
       "deviceData": {
         "temp": [
           {

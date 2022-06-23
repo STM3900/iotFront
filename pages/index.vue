@@ -16,13 +16,13 @@
             v-if="dataTitles[index] == 'Alerte Surchauffe'"
             class="graph-chart"
             :chartData="graph"
-            :options="insertMinMaxY(index)"
+            :options="insertMinMaxY(index, graph)"
           />
           <LineChart
             v-else
             class="graph-chart"
             :chartData="graph"
-            :options="insertMinMaxY(index)"
+            :options="insertMinMaxY(index, graph)"
           />
         </client-only>
       </section>
@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 import MASTER_JSON from "~/assets/json/dataTestIot";
 
 export default {
@@ -54,14 +55,6 @@ export default {
         "Niveau de lumière",
         "Niveau de batterie",
         "Alerte Surchauffe",
-      ],
-      dataMinMax: [
-        { min: undefined, max: 30 },
-        { min: 0, max: 100 },
-        { min: 1020, max: 1028 },
-        { min: 200, max: 280 },
-        { min: 0, max: 100 },
-        { min: 0, max: 1 },
       ],
 
       chartOptions: {
@@ -89,6 +82,9 @@ export default {
       },
     };
   },
+  computed: {
+    ...mapGetters(["getApiResponse", "getStatus", "getApiData"]),
+  },
   mounted() {
     Chart.Legend.prototype.afterFit = function () {
       this.height = this.height + 10;
@@ -97,6 +93,7 @@ export default {
     this.createDataListTab();
   },
   methods: {
+    ...mapActions(["getHello"]),
     createDataListTab() {
       const dataColors = [
         ["hsl(0, 70%, 75%)", "hsl(10, 70%, 75%)", "hsl(20, 70%, 75%)"],
@@ -167,11 +164,19 @@ export default {
 
       return chartData;
     },
-    insertMinMaxY(index) {
+    insertMinMaxY(index, graph) {
       let finalTab = JSON.parse(JSON.stringify(this.chartOptions));
+      let dataTab = [];
 
-      finalTab.scales.yAxes[0].ticks.min = this.dataMinMax[index].min;
-      finalTab.scales.yAxes[0].ticks.max = this.dataMinMax[index].max;
+      for (let i = 0; i < graph.datasets.length; i++) {
+        for (let j = 0; j < graph.datasets[i].data.length; j++) {
+          dataTab.push(graph.datasets[i].data[j]);
+        }
+      }
+
+      finalTab.scales.yAxes[0].ticks.min = Math.round(Math.min(...dataTab));
+      finalTab.scales.yAxes[0].ticks.max =
+        Math.ceil(Math.max(...dataTab) / 10) * 10;
 
       return finalTab;
     },

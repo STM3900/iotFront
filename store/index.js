@@ -33,10 +33,10 @@ export const actions = {
     context.commit("SET_STATUS", status);
   },
 
-  getHello(context) {
+  getAllData(context) {
     context.dispatch("changeStatus", "loading");
     this.$axios
-      .get(`${this.$axios.defaults.baseURL}`, {
+      .get(`${this.$axios.defaults.baseURL}/getalldata`, {
         headers: {
           "Access-Control-Allow-Origin": "*",
         },
@@ -44,10 +44,8 @@ export const actions = {
       .then((response) => {
         context.commit("SET_API_DATA", response.data);
         context.dispatch("changeStatus", "ok");
-        console.log(response.data.text);
       })
       .catch((error) => {
-        console.log(error);
         context.dispatch("changeStatus", "error");
       });
   },

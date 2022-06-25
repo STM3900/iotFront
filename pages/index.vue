@@ -1,8 +1,12 @@
 <template>
-  <div class="container">
-    <h1 class="disable-select">Iot Temp Graph</h1>
-    <article class="graphs">
-      <section v-for="(graph, index) in allDataTab" :key="index">
+  <div>
+    <h1 class="disable-select">Iot Graph</h1>
+    <article v-if="getStatus == 'ok'" class="graphs">
+      <section
+        v-for="(graph, index) in createDataListTab(getApiData)"
+        :key="index"
+        :style="{ animationDelay: `${0.1 * index + 0.5}s` }"
+      >
         <h2 class="disable-select">
           <fa
             class="graph-icon"
@@ -26,6 +30,14 @@
           />
         </client-only>
       </section>
+    </article>
+    <article class="container loading" v-if="getStatus == 'loading'">
+      <img src="~/assets/img/loading.gif" />
+      <p v-if="!getApiResponse">Chargement des données</p>
+    </article>
+    <article class="container error" v-if="getStatus == 'error'">
+      <fa class="error-icon" :icon="['fas', 'xmark']" />
+      <p>Erreur : La connexion à l'API n'a pu être établie</p>
     </article>
   </div>
 </template>
@@ -90,11 +102,11 @@ export default {
       this.height = this.height + 10;
     };
 
-    this.createDataListTab();
+    this.getAllData();
   },
   methods: {
-    ...mapActions(["getHello"]),
-    createDataListTab() {
+    ...mapActions(["getAllData"]),
+    createDataListTab(jsonData) {
       const dataColors = [
         ["hsl(0, 70%, 75%)", "hsl(10, 70%, 75%)", "hsl(20, 70%, 75%)"],
         ["hsl(200, 70%, 75%)", "hsl(210, 70%, 75%)", "hsl(220, 70%, 75%)"],
@@ -106,15 +118,15 @@ export default {
 
       const dataItemFinal = [];
       const dataItemLength = Object.entries(
-        this.dataJson.allData[0].deviceData
+        jsonData.allData[0].deviceData
       ).length;
 
       for (let i = 0; i < dataItemLength; i++) {
         dataItemFinal.push([]);
       }
 
-      for (let i = 0; i < this.dataJson.allData.length; i++) {
-        const item = this.dataJson.allData[i];
+      for (let i = 0; i < jsonData.allData.length; i++) {
+        const item = jsonData.allData[i];
         const dataItem = Object.entries(item.deviceData);
 
         for (let j = 0; j < dataItem.length; j++) {
@@ -138,7 +150,7 @@ export default {
         dataItemFinal[i] = datasetTab;
       }
 
-      this.allDataTab = dataItemFinal;
+      return dataItemFinal;
     },
     generateGraphObj(jsonData, label, color) {
       const chartData = {};
@@ -156,7 +168,6 @@ export default {
         label: label,
         backgroundColor: color,
         data: dataValues,
-        // fill: false,
       });
 
       chartData.labels = dataLabels;
@@ -174,9 +185,13 @@ export default {
         }
       }
 
-      finalTab.scales.yAxes[0].ticks.min = Math.round(Math.min(...dataTab));
-      finalTab.scales.yAxes[0].ticks.max =
-        Math.ceil(Math.max(...dataTab) / 10) * 10;
+      if (typeof graph.datasets[0].data[0] == "boolean") {
+        finalTab.scales.yAxes[0].ticks.display = false;
+      } else {
+        finalTab.scales.yAxes[0].ticks.min = Math.round(Math.min(...dataTab));
+        finalTab.scales.yAxes[0].ticks.max =
+          Math.ceil(Math.max(...dataTab) / 10) * 10;
+      }
 
       return finalTab;
     },
@@ -199,6 +214,11 @@ export default {
 
 .graphs section {
   width: 49%;
+
+  transition: 0.3s;
+  transform: translateY(-5px);
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
 }
 
 .graphs h2 {
@@ -212,5 +232,65 @@ export default {
 
 .graph-chart {
   height: 275px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+  gap: 10px 10px;
+
+  transition: 0.3s;
+  transform: translateY(-5px);
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.container p {
+  margin: 0;
+  font-size: 16px;
+  color: rgb(100, 100, 100);
+}
+
+.loading img {
+  width: 75px;
+}
+
+.loading p {
+  transition: 0.3s;
+  opacity: 0;
+  animation: loading 1.5s ease infinite;
+  margin-top: -15px;
+}
+
+.error .error-icon {
+  margin-top: 15px;
+  color: #f94144;
+  font-size: 25px;
+}
+
+@keyframes fadeIn {
+  0% {
+    transform: translateY(-5px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes loading {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 </style>

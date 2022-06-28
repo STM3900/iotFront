@@ -1,11 +1,16 @@
 <template>
   <div>
     <h1 class="disable-select">Iot Graph</h1>
-    <article v-if="getStatus == 'ok'" class="graphs">
+    <article
+      v-if="getStatus == 'ok'"
+      class="graphs"
+      :class="{ 'graph-hide': hideGraph }"
+    >
       <section
         v-for="(graph, index) in createDataListTab(getApiData)"
         :key="index"
         :style="{ animationDelay: `${0.1 * index + 0.5}s` }"
+        class="graph-animation"
       >
         <h2 class="disable-select">
           <fa
@@ -49,6 +54,7 @@ import MASTER_JSON from "~/assets/json/dataTestIot";
 export default {
   data() {
     return {
+      hideGraph: false,
       dataJson: MASTER_JSON,
       allDataTab: [],
 
@@ -104,8 +110,12 @@ export default {
 
     this.getAllData();
     setInterval(() => {
-      this.getAllData();
-    }, 60000);
+      this.hideGraph = true;
+      setTimeout(() => {
+        this.getAllData();
+        this.hideGraph = false;
+      }, 300);
+    }, 50000);
   },
   methods: {
     ...mapActions(["getAllData"]),
@@ -215,15 +225,22 @@ export default {
   flex-wrap: wrap;
   width: 100%;
   gap: 10px;
+  transition: 0.3s;
 }
 
 .graphs section {
   width: 49%;
+}
 
+.graph-animation {
   transition: 0.3s;
   transform: translateY(-5px);
   opacity: 0;
   animation: fadeIn 0.5s ease forwards;
+}
+
+.graph-hide {
+  opacity: 0;
 }
 
 .graphs h2 {

@@ -1,7 +1,6 @@
 export const state = () => ({
   status: "idle",
   apiData: null,
-  apiMessage: null,
 });
 
 export const getters = {
@@ -11,9 +10,6 @@ export const getters = {
   getApiData: (state) => {
     return state.apiData;
   },
-  getApiMessage: (state) => {
-    return state.apiMessage;
-  },
 };
 
 export const mutations = {
@@ -22,9 +18,6 @@ export const mutations = {
   },
   SET_API_DATA(state, apiData) {
     state.apiData = apiData;
-  },
-  SET_API_MESSAGE(state, apiMessage) {
-    state.apiMessage = apiMessage;
   },
 };
 
@@ -36,7 +29,7 @@ export const actions = {
   getAllData(context) {
     context.dispatch("changeStatus", "loading");
     this.$axios
-      .get(`${this.$axios.defaults.baseURL}/getalldata`, {
+      .get(`${this.$axios.defaults.baseURL}/getdevices`, {
         headers: {
           "Access-Control-Allow-Origin": "*",
         },

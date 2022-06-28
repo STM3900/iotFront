@@ -33,7 +33,7 @@
     </article>
     <article class="container loading" v-if="getStatus == 'loading'">
       <img src="~/assets/img/loading.gif" />
-      <p v-if="!getApiResponse">Chargement des données</p>
+      <p v-if="!getApiData">Chargement des données</p>
     </article>
     <article class="container error" v-if="getStatus == 'error'">
       <fa class="error-icon" :icon="['fas', 'xmark']" />
@@ -95,7 +95,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getApiResponse", "getStatus", "getApiData"]),
+    ...mapGetters(["getStatus", "getApiData"]),
   },
   mounted() {
     Chart.Legend.prototype.afterFit = function () {
@@ -107,6 +107,8 @@ export default {
   methods: {
     ...mapActions(["getAllData"]),
     createDataListTab(jsonData) {
+      console.log(jsonData);
+
       const dataColors = [
         ["hsl(0, 70%, 75%)", "hsl(10, 70%, 75%)", "hsl(20, 70%, 75%)"],
         ["hsl(200, 70%, 75%)", "hsl(210, 70%, 75%)", "hsl(220, 70%, 75%)"],

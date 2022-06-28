@@ -103,6 +103,9 @@ export default {
     };
 
     this.getAllData();
+    setInterval(() => {
+      this.getAllData();
+    }, 60000);
   },
   methods: {
     ...mapActions(["getAllData"]),
